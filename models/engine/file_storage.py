@@ -68,11 +68,23 @@ class FileStorage:
             pass
 
     def delete(self, obj=None):
+<<<<<<< HEAD
         """ delete an existing element
         """
         if obj:
             key = "{}.{}".format(type(obj).__name__, obj.id)
             del self.__objects[key]
+=======
+    """ delete an existing element
+    """
+    if obj:
+        key = "{}.{}".format(type(obj).__name__, obj.id)
+        if key in self.__objects:
+            del self.__objects[key]
+            print(f"Deleted object with key: {key}")
+        else:
+            print(f"Object with key {key} not found.")
+>>>>>>> 90c55052665881d1304fd13c0d569baa4bec7dc6
 
     def close(self):
         """ calls reload()
