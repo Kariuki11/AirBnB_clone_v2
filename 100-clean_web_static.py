@@ -1,12 +1,11 @@
 #!/usr/bin/python3
-"""A module for web application deployment with Fabric."""
+'''Write a Fabric script that deletes out-of-date archives, using the function do_clean'''
 import os
 from datetime import datetime
-from fabric.api import env, local, put, run, runs_once, sudo
+from fabric.api import env, local, put, run, runs_once
 
 
-env.hosts = ["34.73.0.174", "35.196.78.105"]
-"""The list of host server IP addresses."""
+env.hosts = ['52.91.149.183', '34.202.157.45']
 
 
 @runs_once
@@ -25,18 +24,18 @@ def do_pack():
     )
     try:
         print("Packing web_static to {}".format(output))
-        local("tar -cvf {} web_static".format(output))
-        archive_size = os.stat(output).st_size
-        print("web_static packed: {} -> {} Bytes".format(output, archive_size))
+        local("tar -cvzf {} web_static".format(output))
+        archize_size = os.stat(output).st_size
+        print("web_static packed: {} -> {} Bytes".format(output, archize_size))
     except Exception:
         output = None
     return output
 
 
 def do_deploy(archive_path):
-    """Deploys - static files directly to host servers.
+    """Deploys the static files to the host servers.
     Args:
-        archive_path (str): Path to the archived static files.
+        archive_path (str): The path to the archived static files.
     """
     if not os.path.exists(archive_path):
         return False
@@ -61,17 +60,16 @@ def do_deploy(archive_path):
 
 
 def deploy():
-    """archives & deploys the static files to the host servers.
+    """Archives and deploys the static files to the host servers.
     """
     archive_path = do_pack()
     return do_deploy(archive_path) if archive_path else False
 
 
 def do_clean(number=0):
-    """deletes out_of_date archives in static files.
-
+    """Deletes out-of-date archives of the static files.
     Args:
-        number (int): Number of archives to keep.
+        number (Any): The number of archives to keep.
     """
     archives = os.listdir('versions/')
     archives.sort(reverse=True)
@@ -86,8 +84,8 @@ def do_clean(number=0):
         os.unlink('versions/{}'.format(archive))
     cmd_parts = [
         "rm -rf $(",
-        "find /web_static/releases/data/ -max depth 1 -type d -iregex",
-        " '/web_static/releases/data/web_static_.*'",
+        "find /data/web_static/releases/ -maxdepth 1 -type d -iregex",
+        " '/data/web_static/releases/web_static_.*'",
         " | sort -r | tr '\\n' ' ' | cut -d ' ' -f{}-)".format(start + 1)
     ]
     run(''.join(cmd_parts))
